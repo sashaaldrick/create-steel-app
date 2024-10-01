@@ -2,16 +2,18 @@
 
 # function to display menu and get user choice
 select_branch() {
-    echo "Select the release version:"
-    select branch in "release-1.0" "release-1.1"; do
-        case $branch in
-            "release-1.0"|"release-1.1")
-                BRANCH=$branch
-                break
-                ;;
+    while true; do
+        echo "select the branch you want to use:"
+        echo "1) release-1.0"
+        echo "2) release-1.1"
+        read -p "enter 1 or 2: " choice
+        case $choice in
+            1) BRANCH="release-1.0"; break;;
+            2) BRANCH="release-1.1"; break;;
             *) echo "invalid option. please try again.";;
         esac
     done
+    echo "you selected $BRANCH"
 }
 
 # function to get folder name
