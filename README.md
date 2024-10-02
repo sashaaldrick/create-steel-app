@@ -10,7 +10,7 @@ Make sure to have the following installed:
 
 ## Usage
 
-`curl -fsSL https://raw.githubusercontent.com/sashaaldrick/create-steel-app/refs/heads/main/create-steel-app -o create-steel-app.sh && bash create-steel-app.sh`
+`sh -c "$(curl -fsSL https://raw.githubusercontent.com/sashaaldrick/create-steel-app/main/create-steel-app)"`
 
 You can choose between two release versions: [1.0](https://github.com/risc0/risc0-ethereum/tree/release-1.0) and [1.1](https://github.com/risc0/risc0-ethereum/tree/release-1.1).
 

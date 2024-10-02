@@ -1,8 +1,56 @@
 #!/bin/bash
 
-# function to display menu and get user choice
+# check rust installation
+check_rust() {
+    if ! command -v rustc &> /dev/null; then
+        echo "rust not found. to install, visit: https://www.rust-lang.org/tools/install"
+        exit 1
+    fi
+}
+
+# check forge installation, suggest installation if not found
+check_foundry() {
+    if ! command -v forge &> /dev/null; then
+        echo "foundry not found. to install, visit: https://book.getfoundry.sh/getting-started/installation:"
+        exit 1
+    fi
+}
+
+# function to get risc0 version
+get_risc0_version() {
+    RISC0_VERSION=$(cargo risczero --version 2>/dev/null | awk '{print $2}' || echo "")
+    if [[ -z "$RISC0_VERSION" ]]; then
+        echo "cargo risczero not found. Please see installation instructions by visiting: https://dev.risczero.com/api/zkvm/install"
+        exit 1
+    fi
+    echo "detected risc0 version: $RISC0_VERSION"
+
+    # map version to branch
+    if [[ "$RISC0_VERSION" =~ ^1\.0\. ]]; then
+        BRANCH="release-1.0"
+    elif [[ "$RISC0_VERSION" =~ ^1\.1\. ]]; then
+        BRANCH="release-1.1"
+    else
+        echo "unsupported risc0 version. please specify a version manually."
+        BRANCH=""
+    fi
+}
+
 select_branch() {
-    while true; do
+    get_risc0_version
+    
+    if [[ -n "$BRANCH" ]]; then
+        echo "using branch: $BRANCH based on installed risc0 version"
+        read -p "do you want to use a different release? (y/N): " change_branch
+        if [[ "$change_branch" =~ ^[Yy]$ ]]; then
+            BRANCH=""
+        else
+            echo "final branch selection: $BRANCH"
+            return
+        fi
+    fi
+    
+    while [[ -z "$BRANCH" ]]; do
         echo "select the branch you want to use:"
         echo "1) release-1.0"
         echo "2) release-1.1"
@@ -13,10 +61,10 @@ select_branch() {
             *) echo "invalid option. please try again.";;
         esac
     done
-    echo "you selected $BRANCH"
+    
+    echo "final branch selection: $BRANCH"
 }
 
-# function to get folder name
 get_folder_name() {
     while true; do
         read -p "Enter the name for the project folder: " FOLDER_NAME
@@ -28,7 +76,8 @@ get_folder_name() {
     done
 }
 
-# call the function to get user input
+check_rust
+check_foundry
 select_branch
 get_folder_name
 
